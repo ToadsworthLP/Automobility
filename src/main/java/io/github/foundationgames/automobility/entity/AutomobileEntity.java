@@ -27,6 +27,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
+import net.minecraft.particle.ParticleTypes;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.ActionResult;
@@ -59,6 +60,13 @@ public class AutomobileEntity extends Entity implements RenderableAutomobile {
 
     public static final int DRIFT_TURBO_TIME = 50;
     public static final float TERMINAL_VELOCITY = -1.2f;
+    public static final float RAMP_BOOST_MIN_VELOCITY = 0.6f;
+
+    public static final int DRIFT_BOOST_TIME = 32;
+    public static final float DRIFT_BOOST_POWER = 0.3f;
+    
+    public static final int RAMP_BOOST_TIME = 16;
+    public static final float RAMP_BOOST_POWER = 0.3f;
 
     private boolean dirty = false;
 
@@ -363,6 +371,7 @@ public class AutomobileEntity extends Entity implements RenderableAutomobile {
         collisionStateTick();
         steeringTick();
         driftingTick();
+        rampTrickTick();
         movementTick();
         updateTrackedPosition(getX(), getY(), getZ());
 
@@ -843,7 +852,7 @@ public class AutomobileEntity extends Entity implements RenderableAutomobile {
                 drifting = false;
                 steering = 0;
                 if (driftTimer > DRIFT_TURBO_TIME) {
-                    boost(0.3f, 32);
+                    boost(DRIFT_BOOST_POWER, DRIFT_BOOST_TIME);
                 }
             // Ending a drift unsuccessfully, not giving you a boost
             } else if (hSpeed < 0.33f) {
@@ -854,8 +863,36 @@ public class AutomobileEntity extends Entity implements RenderableAutomobile {
         }
     }
 
+    private void rampTrickTick() {
+        // Ramp boost
+        if (wasOnGround && !automobileOnGround && !isFloorDirectlyBelow && holdingDrift && hSpeed > RAMP_BOOST_MIN_VELOCITY) {
+            boost(RAMP_BOOST_POWER, RAMP_BOOST_TIME);
+            if(world.isClient()) spawnTrickEffect();
+        }
+    }
+
     private static boolean inLockedViewMode() {
         return ControllerUtils.inControllerMode();
+    }
+
+    @Environment(EnvType.CLIENT)
+    private void spawnTrickEffect() {
+        for (int i = 0; i < 6; i++) {
+            for (int j = 0; j < 6; j++) {
+                double xVel = Math.sin(i) * Math.cos(j);
+                double yVel = Math.sin(i) * Math.sin(j);
+                double zVel = Math.cos(i);
+
+                world.addParticle(
+                        ParticleTypes.CRIT,
+                        getX(),
+                        getY() + 0.5,
+                        getZ(),
+                        xVel,
+                        yVel,
+                        zVel);
+            }
+        }
     }
 
     @Environment(EnvType.CLIENT)
