@@ -18,10 +18,10 @@ public enum AutomobilityAssets {;
     private static final Set<Consumer<RuntimeResourcePack>> PROCESSORS = new HashSet<>();
 
     public static void setup() {
-        addOffRoad("grass_off_road");
-        addOffRoad("dirt_off_road");
-        addOffRoad("sand_off_road");
-        addOffRoad("snow_off_road");
+        addOffRoad("grass_offroad_layer");
+        addOffRoad("dirt_offroad_layer");
+        addOffRoad("sand_offroad_layer");
+        addOffRoad("snow_offroad_layer");
 
         var dashPanel = JState.variant();
         for (Direction dir : AUtils.HORIZONTAL_DIRS) {
@@ -63,7 +63,7 @@ public enum AutomobilityAssets {;
 
     public static void addOffRoad(String name) {
         for (int i = 0; i < 3; i++) {
-            PACK.addModel(new JModel().parent("automobility:block/template_off_road_"+i).textures(JModel.textures().var("off_road", "automobility:block/"+name)), Automobility.id("block/"+name+"_"+i));
+            PACK.addModel(new JModel().parent("automobility:block/template_offroad_layer_"+i).textures(JModel.textures().var("offroad_layer", "automobility:block/"+name)), Automobility.id("block/"+name+"_"+i));
         }
         PACK.addModel(new JModel().parent("automobility:block/"+name+"_0"), Automobility.id("item/"+name));
         PACK.addBlockState(new JState().add(new JVariant()

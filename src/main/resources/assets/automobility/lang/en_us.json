@@ -3,6 +3,8 @@
 
   "itemGroup.automobility.automobility": "Automobility",
   "itemGroup.automobility.automobility_prefabs": "Automobility: Prefabs",
+  "itemGroup.automobility.automobility_slopes": "Automobility: Slopes",
+  "itemGroup.automobility.automobility_offroad": "Automobility: Offroad Blocks",
 
   "automobility.automobility": "Automobility",
   "lambdacontrols.action.automobility.accelerate_automobile": "Accelerate",
@@ -14,10 +16,10 @@
 
   "tooltip.item.automobility.crowbar": "Use on Automobile to remove",
 
-  "block.automobility.grass_off_road": "Grass Off Road",
-  "block.automobility.dirt_off_road": "Dirt Off Road",
-  "block.automobility.sand_off_road": "Sand Off Road",
-  "block.automobility.snow_off_road": "Snow Off Road",
+  "block.automobility.grass_offroad_layer": "Grass Offroad Layer",
+  "block.automobility.dirt_offroad_layer": "Dirt Offroad Layer",
+  "block.automobility.sand_offroad_layer": "Sand Offroad Layer",
+  "block.automobility.snow_offroad_layer": "Snow Offroad Layer",
   "block.automobility.dash_panel": "Dash Panel",
   "block.automobility.sloped_dash_panel": "Sloped Dash Panel",
   "block.automobility.steep_sloped_dash_panel": "Steep Sloped Dash Panel",

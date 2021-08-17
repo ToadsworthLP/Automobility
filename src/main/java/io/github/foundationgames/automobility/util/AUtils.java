@@ -5,6 +5,7 @@ import io.github.foundationgames.automobility.automobile.AutomobileEngine;
 import io.github.foundationgames.automobility.automobile.AutomobileFrame;
 import io.github.foundationgames.automobility.automobile.AutomobilePrefab;
 import io.github.foundationgames.automobility.automobile.AutomobileWheel;
+import io.github.foundationgames.automobility.block.AutomobilityBlocks;
 import io.github.foundationgames.automobility.item.AutomobilityItems;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.model.BakedModel;
@@ -165,5 +166,13 @@ public enum AUtils {;
 
     public static ItemStack createPrefabsIcon() {
         return new AutomobilePrefab(Automobility.id("standard_light_blue"), AutomobileFrame.STANDARD_LIGHT_BLUE, AutomobileWheel.STANDARD, AutomobileEngine.IRON).toStack();
+    }
+
+    public static ItemStack createSlopesIcon() {
+        return new ItemStack(AutomobilityBlocks.STEEP_SLOPED_DASH_PANEL.asItem());
+    }
+
+    public static ItemStack createOffroadIcon() {
+        return new ItemStack(AutomobilityBlocks.DIRT_OFFROAD_LAYER.asItem());
     }
 }

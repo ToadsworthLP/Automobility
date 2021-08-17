@@ -58,6 +58,6 @@ public class SlopeBlockItem extends BlockItem {
     @Override
     public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
         super.appendTooltip(stack, world, tooltip, context);
-        if (base != null) tooltip.add(new TranslatableText(base.getTranslationKey()).formatted(Formatting.BLUE));
+        if (base != null) tooltip.add(new TranslatableText(base.getTranslationKey()).formatted(Formatting.GRAY));
     }
 }

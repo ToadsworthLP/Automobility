@@ -73,15 +73,15 @@ public class AutomobileItem extends Item {
         } else {
             if (!data.isPrefab()) {
                 tooltip.add(
-                        new TranslatableText("tooltip.automobility.frameLabel").formatted(Formatting.BLUE)
+                        new TranslatableText("tooltip.automobility.frameLabel").formatted(Formatting.GRAY)
                                 .append(new TranslatableText(data.getFrame().getTranslationKey()).formatted(Formatting.DARK_GREEN))
                 );
                 tooltip.add(
-                        new TranslatableText("tooltip.automobility.wheelLabel").formatted(Formatting.BLUE)
+                        new TranslatableText("tooltip.automobility.wheelLabel").formatted(Formatting.GRAY)
                                 .append(new TranslatableText(data.getWheel().getTranslationKey()).formatted(Formatting.DARK_GREEN))
                 );
                 tooltip.add(
-                        new TranslatableText("tooltip.automobility.engineLabel").formatted(Formatting.BLUE)
+                        new TranslatableText("tooltip.automobility.engineLabel").formatted(Formatting.GRAY)
                                 .append(new TranslatableText(data.getEngine().getTranslationKey()).formatted(Formatting.DARK_GREEN))
                 );
             }

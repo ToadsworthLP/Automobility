@@ -828,8 +828,6 @@ public class AutomobileEntity extends Entity implements RenderableAutomobile {
             this.steering += 0.42f * steeringInput;
             this.steering = MathHelper.clamp(this.steering, -1, 1);
         }
-
-        if(!world.isClient()) System.out.println(steeringInput + " -> " + steering);
     }
 
     private void driftingTick() {
