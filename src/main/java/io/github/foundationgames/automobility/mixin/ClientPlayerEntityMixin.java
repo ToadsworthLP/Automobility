@@ -23,8 +23,6 @@ public class ClientPlayerEntityMixin {
                 vehicle.provideClientInput(
                         ControllerUtils.accelerating(),
                         ControllerUtils.braking(),
-                        ControllerUtils.steering() < 0,
-                        ControllerUtils.steering() > 0,
                         ControllerUtils.drifting(),
                         ControllerUtils.steering(),
                         true
@@ -33,8 +31,6 @@ public class ClientPlayerEntityMixin {
                 vehicle.provideClientInput(
                         input.pressingForward,
                         input.pressingBack,
-                        input.pressingLeft,
-                        input.pressingRight,
                         input.jumping,
                         input.pressingRight == input.pressingLeft ? 0f : (input.pressingRight ? 1.0f : -1.0f),
                         false
