@@ -17,13 +17,15 @@ import net.minecraft.util.Identifier;
 
 public enum PayloadPackets {;
     @Environment(EnvType.CLIENT)
-    public static void sendSyncAutomobileInputPacket(AutomobileEntity entity, boolean fwd, boolean back, boolean left, boolean right, boolean space) {
+    public static void sendSyncAutomobileInputPacket(AutomobileEntity entity, boolean fwd, boolean back, boolean left, boolean right, boolean space, float steer, boolean analog) {
         PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
         buf.writeBoolean(fwd);
         buf.writeBoolean(back);
         buf.writeBoolean(left);
         buf.writeBoolean(right);
         buf.writeBoolean(space);
+        buf.writeFloat(steer);
+        buf.writeBoolean(analog);
         buf.writeInt(entity.getId());
         ClientPlayNetworking.send(Automobility.id("sync_automobile_inputs"), buf);
     }
@@ -68,10 +70,12 @@ public enum PayloadPackets {;
             boolean left = buf.readBoolean();
             boolean right = buf.readBoolean();
             boolean space = buf.readBoolean();
+            float steer = buf.readFloat();
+            boolean analog = buf.readBoolean();
             int entityId = buf.readInt();
             server.execute(() -> {
                 if (player.world.getEntityById(entityId) instanceof AutomobileEntity automobile) {
-                    automobile.setInputs(fwd, back, left, right, space);
+                    automobile.setInputs(fwd, back, left, right, space, steer, analog);
                     automobile.markDirty();
                 }
             });

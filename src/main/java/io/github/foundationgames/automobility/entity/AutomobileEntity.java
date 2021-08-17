@@ -64,7 +64,7 @@ public class AutomobileEntity extends Entity implements RenderableAutomobile {
 
     public static final int DRIFT_BOOST_TIME = 32;
     public static final float DRIFT_BOOST_POWER = 0.3f;
-    
+
     public static final int RAMP_BOOST_TIME = 16;
     public static final float RAMP_BOOST_POWER = 0.3f;
 
@@ -134,6 +134,7 @@ public class AutomobileEntity extends Entity implements RenderableAutomobile {
         buf.writeFloat(groundSlopeZ);
         buf.writeFloat(verticalTravelPitch);
         buf.writeByte(compactInputData());
+        buf.writeFloat(steeringInput);
     }
 
     public void readSyncToClientData(PacketByteBuf buf) {
@@ -146,6 +147,7 @@ public class AutomobileEntity extends Entity implements RenderableAutomobile {
         groundSlopeZ = buf.readFloat();
         verticalTravelPitch = buf.readFloat();
         readCompactedInputData(buf.readByte());
+        steeringInput = buf.readFloat();
     }
 
     @Override
@@ -174,6 +176,8 @@ public class AutomobileEntity extends Entity implements RenderableAutomobile {
         steeringLeft = nbt.getBoolean("steeringLeft");
         steeringRight = nbt.getBoolean("steeringRight");
         holdingDrift = nbt.getBoolean("holdingDrift");
+        steeringInput = nbt.getFloat("steeringInput");
+        analogSteering = nbt.getBoolean("analogSteering");
         groundSlopeX = nbt.getFloat("angleX");
         groundSlopeZ = nbt.getFloat("angleZ");
         fallTicks = nbt.getInt("fallTicks");
@@ -205,6 +209,8 @@ public class AutomobileEntity extends Entity implements RenderableAutomobile {
         nbt.putBoolean("steeringLeft", steeringLeft);
         nbt.putBoolean("steeringRight", steeringRight);
         nbt.putBoolean("holdingDrift", holdingDrift);
+        nbt.putFloat("steeringInput", steeringInput);
+        nbt.putBoolean("analogSteering", analogSteering);
         nbt.putFloat("angleX", groundSlopeX);
         nbt.putFloat("angleZ", groundSlopeZ);
         nbt.putInt("fallTicks", fallTicks);
@@ -215,12 +221,14 @@ public class AutomobileEntity extends Entity implements RenderableAutomobile {
     private boolean steeringLeft = false;
     private boolean steeringRight = false;
     private boolean holdingDrift = false;
+    private float steeringInput = 0f;
+    private boolean analogSteering = false;
 
     private boolean prevHoldDrift = holdingDrift;
 
     public byte compactInputData() {
         // yeah
-        int r = ((((((((accelerating ? 1 : 0) << 1) | (braking ? 1 : 0)) << 1) | (steeringLeft ? 1 : 0)) << 1) | (steeringRight ? 1 : 0)) << 1) | (holdingDrift ? 1 : 0);
+        int r = ((((((((((accelerating ? 1 : 0) << 1) | (braking ? 1 : 0)) << 1) | (steeringLeft ? 1 : 0)) << 1) | (steeringRight ? 1 : 0)) << 1) | (analogSteering ? 1 : 0)) << 1) | (holdingDrift ? 1 : 0);
         return (byte) r;
     }
 
@@ -228,6 +236,8 @@ public class AutomobileEntity extends Entity implements RenderableAutomobile {
         // yup
         int d = data;
         holdingDrift = (1 & d) > 0;
+        d = d >> 0b1;
+        analogSteering = (1 & d) > 0;
         d = d >> 0b1;
         steeringRight = (1 & d) > 0;
         d = d >> 0b1;
@@ -367,6 +377,8 @@ public class AutomobileEntity extends Entity implements RenderableAutomobile {
             steeringLeft = false;
             steeringRight = false;
             holdingDrift = false;
+            steeringInput = 0;
+            analogSteering = false;
         }
         collisionStateTick();
         steeringTick();
@@ -789,27 +801,31 @@ public class AutomobileEntity extends Entity implements RenderableAutomobile {
     }
 
     @Environment(EnvType.CLIENT)
-    public void provideClientInput(boolean fwd, boolean back, boolean left, boolean right, boolean space) {
+    public void provideClientInput(boolean fwd, boolean back, boolean left, boolean right, boolean drift, float steer, boolean analog) {
         // Receives inputs client-side and sends them to the server
         if (!(
                 fwd == accelerating &&
                 back == braking &&
                 left == steeringLeft &&
                 right == steeringRight &&
-                space == holdingDrift
+                drift == holdingDrift &&
+                steer == steeringInput &&
+                analog == analogSteering
         )) {
-            setInputs(fwd, back, left, right, space);
-            PayloadPackets.sendSyncAutomobileInputPacket(this, accelerating, braking, steeringLeft, steeringRight, holdingDrift);
+            setInputs(fwd, back, left, right, drift, steer, analog);
+            PayloadPackets.sendSyncAutomobileInputPacket(this, accelerating, braking, steeringLeft, steeringRight, holdingDrift, steer, analog);
         }
     }
 
-    public void setInputs(boolean fwd, boolean back, boolean left, boolean right, boolean space) {
+    public void setInputs(boolean fwd, boolean back, boolean left, boolean right, boolean drift, float steer, boolean analog) {
         this.prevHoldDrift = this.holdingDrift;
         this.accelerating = fwd;
         this.braking = back;
         this.steeringLeft = left;
         this.steeringRight = right;
-        this.holdingDrift = space;
+        this.holdingDrift = drift;
+        this.steeringInput = steer;
+        this.analogSteering = analog;
     }
 
     public void boost(float power, int time) {
@@ -822,15 +838,26 @@ public class AutomobileEntity extends Entity implements RenderableAutomobile {
     private void steeringTick() {
         // Adjust the steering based on the left/right inputs
         this.lastSteering = steering;
-        if (steeringLeft == steeringRight) {
-            this.steering = AUtils.zero(this.steering, 0.42f);
-        } else if (steeringLeft) {
-            this.steering -= 0.42f;
-            this.steering = Math.max(-1, this.steering);
+
+        if(analogSteering) {
+            this.steering = steeringInput;
         } else {
-            this.steering += 0.42f;
-            this.steering = Math.min(1, this.steering);
+            this.steering += 0.42f * steeringInput;
+            this.steering = MathHelper.clamp(this.steering, -1, 1);
+            if(steeringLeft == steeringRight) this.steering = AUtils.zero(this.steering, 0.42f);
         }
+
+//        if (steeringLeft == steeringRight) {
+//            this.steering = AUtils.zero(this.steering, 0.42f);
+//        } else if (steeringLeft) {
+//            this.steering += 0.42f * steeringInput;
+//            this.steering = Math.max(-1, this.steering);
+//        } else {
+//            this.steering += 0.42f * steeringInput;
+//            this.steering = Math.min(1, this.steering);
+//        }
+
+        if(!world.isClient()) System.out.println(steeringInput + " -> " + steering);
     }
 
     private void driftingTick() {

@@ -15,6 +15,8 @@ public enum ControllerUtils {;
         return isLCLoaded() && AutomobilityLC.DRIFT.isButtonDown();
     }
 
+    public static float steering() { return isLCLoaded() ? AutomobilityLC.getSteeringInput() : 0f; }
+
     public static boolean inControllerMode() {
         return isLCLoaded() && AutomobilityLC.IN_CONTROLLER_MODE.get();
     }

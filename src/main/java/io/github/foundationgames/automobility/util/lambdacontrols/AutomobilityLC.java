@@ -2,6 +2,7 @@ package io.github.foundationgames.automobility.util.lambdacontrols;
 
 import dev.lambdaurora.lambdacontrols.ControlsMode;
 import dev.lambdaurora.lambdacontrols.client.LambdaControlsClient;
+import dev.lambdaurora.lambdacontrols.client.LambdaControlsConfig;
 import dev.lambdaurora.lambdacontrols.client.compat.CompatHandler;
 import dev.lambdaurora.lambdacontrols.client.compat.LambdaControlsCompat;
 import dev.lambdaurora.lambdacontrols.client.controller.ButtonBinding;
@@ -47,6 +48,11 @@ public class AutomobilityLC implements CompatHandler {
 
     public static void init() {
         LambdaControlsCompat.registerCompatHandler(new AutomobilityLC());
+    }
+
+    public static float getSteeringInput() {
+        return InputManager.getBindingValue(ButtonBinding.RIGHT, InputManager.getBindingState(ButtonBinding.RIGHT)) -
+                InputManager.getBindingValue(ButtonBinding.LEFT, InputManager.getBindingState(ButtonBinding.LEFT));
     }
 
     @Override
