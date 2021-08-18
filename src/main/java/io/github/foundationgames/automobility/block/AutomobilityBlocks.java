@@ -8,15 +8,25 @@ import io.github.foundationgames.automobility.item.SteepSlopeBlockItem;
 import io.github.foundationgames.automobility.resource.AutomobilityAssets;
 import io.github.foundationgames.automobility.resource.AutomobilityData;
 import io.github.foundationgames.automobility.util.AUtils;
+import io.github.foundationgames.automobility.util.AutomobilityBlockSettings;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
 import net.fabricmc.fabric.api.client.rendering.v1.ColorProviderRegistry;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
+import net.fabricmc.fabric.api.tag.TagRegistry;
+import net.fabricmc.fabric.mixin.object.builder.AbstractBlockAccessor;
+import net.fabricmc.fabric.mixin.object.builder.AbstractBlockSettingsAccessor;
+import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.MapColor;
+import net.minecraft.client.color.block.BlockColorProvider;
+import net.minecraft.client.color.item.ItemColorProvider;
 import net.minecraft.client.color.world.BiomeColors;
 import net.minecraft.client.color.world.FoliageColors;
 import net.minecraft.client.color.world.GrassColors;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
@@ -29,50 +39,41 @@ import java.util.Set;
 
 public enum AutomobilityBlocks {;
     public static final Block AUTO_MECHANIC_TABLE = register("auto_mechanic_table", new AutoMechanicTableBlock(FabricBlockSettings.copyOf(Blocks.COPPER_BLOCK)), Automobility.MAIN_GROUP);
-    public static final Block GRASS_OFFROAD_LAYER = register("grass_offroad_layer", new OffRoadBlock(FabricBlockSettings.copyOf(Blocks.GRASS_BLOCK).noCollision(), AUtils.colorFromInt(0x406918)), Automobility.OFFROAD_GROUP);
-    public static final Block DIRT_OFFROAD_LAYER = register("dirt_offroad_layer", new OffRoadBlock(FabricBlockSettings.copyOf(Blocks.DIRT).noCollision(), AUtils.colorFromInt(0x594227)), Automobility.OFFROAD_GROUP);
-    public static final Block SAND_OFFROAD_LAYER = register("sand_offroad_layer", new OffRoadBlock(FabricBlockSettings.copyOf(Blocks.SAND).noCollision(), AUtils.colorFromInt(0xC2B185)), Automobility.OFFROAD_GROUP);
-    public static final Block SNOW_OFFROAD_LAYER = register("snow_offroad_layer", new OffRoadBlock(FabricBlockSettings.copyOf(Blocks.SNOW).noCollision(), AUtils.colorFromInt(0xD0E7ED)), Automobility.OFFROAD_GROUP);
+    public static final Block GRASS_OFFROAD_LAYER = register("grass_offroad_layer", new OffRoadBlock(FabricBlockSettings.copyOf(Blocks.GRASS_BLOCK).noCollision(), AUtils.colorFromInt(0x406918), Blocks.GRASS_BLOCK), Automobility.OFFROAD_GROUP);
+    public static final Block DIRT_OFFROAD_LAYER = register("dirt_offroad_layer", new OffRoadBlock(FabricBlockSettings.copyOf(Blocks.DIRT).noCollision(), AUtils.colorFromInt(0x594227), Blocks.DIRT), Automobility.OFFROAD_GROUP);
+    public static final Block SAND_OFFROAD_LAYER = register("sand_offroad_layer", new OffRoadBlock(FabricBlockSettings.copyOf(Blocks.SAND).noCollision(), AUtils.colorFromInt(0xC2B185), Blocks.SAND), Automobility.OFFROAD_GROUP);
+    public static final Block SNOW_OFFROAD_LAYER = register("snow_offroad_layer", new OffRoadBlock(FabricBlockSettings.copyOf(Blocks.SNOW).noCollision(), AUtils.colorFromInt(0xD0E7ED), Blocks.SNOW_BLOCK), Automobility.OFFROAD_GROUP);
 
     public static final Block DASH_PANEL = register("dash_panel", new DashPanelBlock(FabricBlockSettings.copyOf(Blocks.IRON_BLOCK).luminance(1).emissiveLighting((state, world, pos) -> true).noCollision()), Automobility.MAIN_GROUP);
-    public static final Block SLOPED_DASH_PANEL = register("sloped_dash_panel", new SlopedDashPanelBlock(FabricBlockSettings.copyOf(Blocks.IRON_BLOCK).luminance(1).emissiveLighting((state, world, pos) -> true)));
-    public static final Block STEEP_SLOPED_DASH_PANEL = register("steep_sloped_dash_panel", new SteepSlopedDashPanelBlock(FabricBlockSettings.copyOf(Blocks.IRON_BLOCK).luminance(1).emissiveLighting((state, world, pos) -> true)));
-
-    private static final Set<Block> FOLIAGE_COLOR_BLOCKS = new HashSet<>();
-    private static final Set<Block> GRASS_COLOR_BLOCKS = new HashSet<>();
+    public static final Block SLOPED_DASH_PANEL = register("dash_panel_slope", new SlopedDashPanelBlock(FabricBlockSettings.copyOf(Blocks.IRON_BLOCK).luminance(1).emissiveLighting((state, world, pos) -> true)));
+    public static final Block STEEP_SLOPED_DASH_PANEL = register("steep_dash_panel_slope", new SteepSlopedDashPanelBlock(FabricBlockSettings.copyOf(Blocks.IRON_BLOCK).luminance(1).emissiveLighting((state, world, pos) -> true)));
 
     public static void init() {
-        Registry.register(Registry.ITEM, Automobility.id("sloped_dash_panel"), new SlopeBlockItem(DASH_PANEL, SLOPED_DASH_PANEL, new Item.Settings().group(Automobility.SLOPES_GROUP)));
-        Registry.register(Registry.ITEM, Automobility.id("steep_sloped_dash_panel"), new SteepSlopeBlockItem(DASH_PANEL, STEEP_SLOPED_DASH_PANEL, new Item.Settings().group(Automobility.SLOPES_GROUP)));
+        Registry.register(Registry.ITEM, Automobility.id("dash_panel_slope"), new SlopeBlockItem(DASH_PANEL, SLOPED_DASH_PANEL, new Item.Settings().group(Automobility.SLOPES_GROUP)));
+        Registry.register(Registry.ITEM, Automobility.id("steep_dash_panel_slope"), new SteepSlopeBlockItem(DASH_PANEL, STEEP_SLOPED_DASH_PANEL, new Item.Settings().group(Automobility.SLOPES_GROUP)));
 
         registerSlopes();
     }
 
     @Environment(EnvType.CLIENT)
     public static void initClient() {
-        GRASS_COLOR_BLOCKS.add(GRASS_OFFROAD_LAYER);
+        for (Block block : Registry.BLOCK) {
+            if(block instanceof BasedOnBlock basedOnBlock) {
+                BlockRenderLayerMap.INSTANCE.putBlock(block, RenderLayer.getCutout());
+            }
+        }
     }
 
     @Environment(EnvType.CLIENT)
     public static void initFoliageColorBlocks() {
-        for (Block base : Registry.BLOCK) {
-            if(base instanceof BasedOnBlock basedOnBlock && ColorProviderRegistry.BLOCK.get(basedOnBlock.getBaseBlock()) != null) {
-                if(base.getName().asString().contains("grass")) {
-                    GRASS_COLOR_BLOCKS.add(base);
-                } else {
-                    FOLIAGE_COLOR_BLOCKS.add(base);
-                }
+        for (Block block : Registry.BLOCK) {
+            if(block instanceof BasedOnBlock basedOnBlock && ColorProviderRegistry.BLOCK.get(basedOnBlock.getBaseBlock()) != null) {
+                BlockColorProvider blockColorProvider = ColorProviderRegistry.BLOCK.get(basedOnBlock.getBaseBlock());
+                ItemColorProvider itemColorProvider = ColorProviderRegistry.ITEM.get(basedOnBlock.getBaseBlock().asItem());
+
+                if(blockColorProvider != null) ColorProviderRegistry.BLOCK.register(blockColorProvider, block);
+                if(itemColorProvider != null) ColorProviderRegistry.ITEM.register(itemColorProvider, block.asItem());
             }
-        }
-
-        for (Block block : GRASS_COLOR_BLOCKS) {
-            ColorProviderRegistry.BLOCK.register((state, world, pos, tintIndex) -> world != null && pos != null ? BiomeColors.getGrassColor(world, pos) : GrassColors.getColor(0.5D, 1.0D), block);
-            ColorProviderRegistry.ITEM.register((stack, tintIndex) -> GrassColors.getColor(0.5D, 1.0D), block.asItem());
-        }
-
-        for (Block block : FOLIAGE_COLOR_BLOCKS) {
-            ColorProviderRegistry.BLOCK.register((state, world, pos, tintIndex) -> world != null && pos != null ? BiomeColors.getFoliageColor(world, pos) : FoliageColors.getColor(0.5D, 1.0D), block);
-            ColorProviderRegistry.ITEM.register((stack, tintIndex) -> GrassColors.getColor(0.5D, 1.0D), block.asItem());
         }
     }
 
@@ -86,12 +87,16 @@ public enum AutomobilityBlocks {;
     }
 
     public static void registerSlopes() {
-        AutomobilityData.NON_STEEP_SLOPE_TAG_CANDIDATES.add(Automobility.id("sloped_dash_panel"));
-        AutomobilityData.STEEP_SLOPE_TAG_CANDIDATES.add(Automobility.id("steep_sloped_dash_panel"));
+        AutomobilityData.NON_STEEP_SLOPE_TAG_CANDIDATES.add(Automobility.id("dash_panel_slope"));
+        AutomobilityData.STEEP_SLOPE_TAG_CANDIDATES.add(Automobility.id("steep_dash_panel_slope"));
 
         Set<Identifier> blacklist = AutomobilityConfig.CONFIG.getBlacklist();
         for (Block base : Registry.BLOCK) {
-            if (!base.equals(Blocks.AIR) && base.getClass().equals(Block.class)) {
+            Identifier baseIdentifier = Registry.BLOCK.getId(base);
+            if (!(base.equals(Blocks.AIR) ||
+                    (baseIdentifier.getNamespace().equals(Automobility.MOD_ID) && baseIdentifier.getPath().endsWith("_slope")) /*||
+                    base.getDefaultState().isIn()*/ // TODO don't include blocks with tag like sign, button, bed,...
+            )) {
                 Identifier id = Registry.BLOCK.getId(base);
                 if (!blacklist.contains(id)) {
                     String texture = id.getNamespace() + ":block/" + id.getPath();
@@ -120,10 +125,15 @@ public enum AutomobilityBlocks {;
         Identifier normalId = Automobility.id(path);
         Identifier steepId = Automobility.id(steepPath);
 
-        Block block = register(path, new SlopeBlock(FabricBlockSettings.copyOf(base), base));
+        AutomobilityBlockSettings settings = AutomobilityBlockSettings.copyOfDefaultState(base);
+        settings.nonOpaque();
+        settings.collidable(true);
+
+        SlopeBlock slopeBlock = new SlopeBlock(settings, base);
+        Block block = register(path, slopeBlock);
         Registry.register(Registry.ITEM, normalId, new SlopeBlockItem(base, block, new Item.Settings().group(Automobility.SLOPES_GROUP)));
 
-        Block steepBlock = register(steepPath, new SteepSlopeBlock(FabricBlockSettings.copyOf(base), base));
+        Block steepBlock = register(steepPath, new SteepSlopeBlock(settings, base));
         Registry.register(Registry.ITEM, steepId, new SteepSlopeBlockItem(base, steepBlock, new Item.Settings().group(Automobility.SLOPES_GROUP)));
 
         AutomobilityAssets.addProcessor(pack -> AutomobilityAssets.addSlope(path, texture));
