@@ -7,6 +7,7 @@ import me.shedaniel.autoconfig.annotation.Config;
 import me.shedaniel.autoconfig.annotation.ConfigEntry;
 import me.shedaniel.autoconfig.serializer.JanksonConfigSerializer;
 import me.shedaniel.cloth.clothconfig.shadowed.blue.endless.jankson.Comment;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.util.Identifier;
 
 import java.util.*;
@@ -52,6 +53,10 @@ public class AutomobilityConfig implements ConfigData {
         return customBlocks;
     }
 
+    public RenderLayer getDynamicContentRenderLayer() {
+        return dynamicBlocksOnCutoutLayer ? RenderLayer.getCutout() : RenderLayer.getSolid();
+    }
+
     @Override
     public void validatePostLoad()
     {
@@ -76,7 +81,12 @@ public class AutomobilityConfig implements ConfigData {
     @Comment("""
             Used to add custom blocks to the dynamic content generation system.
             Format:
-            <base block identifier>,<texture identifier> OR
+            <base block identifier>,<texture identifier> or, if registering more than one for that base block,
             <base block identifier>,<texture identifier>,<custom name>,<custom tooltip translation key>""")
     private List<String> customBlocks = new ArrayList<>();
+
+    @Comment("""
+            Whether dynamically generated blocks are rendered on the Solid or Cutout layer
+            Turn this on if any custom blocks should be see-through, but aren't.""")
+    private boolean dynamicBlocksOnCutoutLayer = false;
 }

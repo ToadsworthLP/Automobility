@@ -57,9 +57,12 @@ public enum AutomobilityBlocks {;
 
     @Environment(EnvType.CLIENT)
     public static void initClient() {
-        for (Block block : Registry.BLOCK) {
-            if(block instanceof BasedOnBlock basedOnBlock) {
-                BlockRenderLayerMap.INSTANCE.putBlock(block, RenderLayer.getCutout());
+        RenderLayer layer = AutomobilityConfig.CONFIG.getDynamicContentRenderLayer();
+        if(!layer.equals(RenderLayer.getSolid())) {
+            for (Block block : Registry.BLOCK) {
+                if(block instanceof BasedOnBlock basedOnBlock) {
+                    BlockRenderLayerMap.INSTANCE.putBlock(block, layer);
+                }
             }
         }
     }
@@ -93,10 +96,7 @@ public enum AutomobilityBlocks {;
         Set<Identifier> blacklist = AutomobilityConfig.CONFIG.getBlacklist();
         for (Block base : Registry.BLOCK) {
             Identifier baseIdentifier = Registry.BLOCK.getId(base);
-            if (!(base.equals(Blocks.AIR) ||
-                    (baseIdentifier.getNamespace().equals(Automobility.MOD_ID) && baseIdentifier.getPath().endsWith("_slope")) /*||
-                    base.getDefaultState().isIn()*/ // TODO don't include blocks with tag like sign, button, bed,...
-            )) {
+            if (base.getClass().equals(Block.class)) {
                 Identifier id = Registry.BLOCK.getId(base);
                 if (!blacklist.contains(id)) {
                     String texture = id.getNamespace() + ":block/" + id.getPath();

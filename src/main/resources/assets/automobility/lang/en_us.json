@@ -102,5 +102,6 @@
 
   "text.autoconfig.automobility.title": "Automobility",
   "text.autoconfig.automobility.option.blacklist": "Blacklist",
-  "text.autoconfig.automobility.option.customBlocks": "Custom Slope Blocks"
+  "text.autoconfig.automobility.option.customBlocks": "Custom slope blocks",
+  "text.autoconfig.automobility.option.dynamicBlocksOnCutoutLayer": "Render dynamic blocks on cutout layer"
 }
