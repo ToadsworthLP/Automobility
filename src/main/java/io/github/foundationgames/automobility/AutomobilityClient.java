@@ -9,6 +9,7 @@ import io.github.foundationgames.automobility.resource.AutomobilityAssets;
 import io.github.foundationgames.automobility.util.AUtils;
 import io.github.foundationgames.automobility.util.network.PayloadPackets;
 import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
@@ -34,6 +35,10 @@ public class AutomobilityClient implements ClientModInitializer {
                 if (auto.getDriftTimer() > AutomobileEntity.DRIFT_TURBO_TIME) color = 0x7DE9FF;
                 DrawableHelper.drawTextWithShadow(matrices, MinecraftClient.getInstance().textRenderer, new LiteralText(AUtils.DEC_TWO_PLACES.format(speed) +" m/s"), 20, 20, color);
             }
+        });
+
+        ClientLifecycleEvents.CLIENT_STARTED.register((MinecraftClient client) -> {
+            AutomobilityBlocks.initFoliageColorBlocks();
         });
     }
 }

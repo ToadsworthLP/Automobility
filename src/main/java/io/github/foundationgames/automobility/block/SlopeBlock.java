@@ -21,7 +21,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 
-public class SlopeBlock extends HorizontalFacingBlock implements Waterloggable, Sloped {
+public class SlopeBlock extends HorizontalFacingBlock implements Waterloggable, Sloped, BasedOnBlock {
     public static final VoxelShape NORTH_BOTTOM_SHAPE;
     public static final VoxelShape SOUTH_BOTTOM_SHAPE;
     public static final VoxelShape EAST_BOTTOM_SHAPE;
@@ -34,8 +34,11 @@ public class SlopeBlock extends HorizontalFacingBlock implements Waterloggable, 
     public static final EnumProperty<BlockHalf> HALF = Properties.BLOCK_HALF;
     public static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
 
-    public SlopeBlock(Settings settings) {
+    private final Block baseBlock;
+
+    public SlopeBlock(Settings settings, Block baseBlock) {
         super(settings);
+        this.baseBlock = baseBlock;
         setDefaultState(getDefaultState().with(FACING, Direction.NORTH).with(HALF, BlockHalf.BOTTOM).with(WATERLOGGED, false));
     }
 
@@ -147,5 +150,10 @@ public class SlopeBlock extends HorizontalFacingBlock implements Waterloggable, 
     @Override
     public boolean isSticky() {
         return true;
+    }
+
+    @Override
+    public Block getBaseBlock() {
+        return baseBlock;
     }
 }

@@ -73,7 +73,7 @@ public enum AutomobilityAssets {;
         ), Automobility.id(name));
     }
 
-    public static void addSlope(String name, String texture) {
+    private static void _addSlope(String name, String texture) {
         {
             var path = "block/"+name;
             PACK.addModel(new JModel().parent("automobility:block/template_slope_bottom").textures(JModel.textures().var("slope", texture)), Automobility.id(path+"_bottom"));
@@ -101,23 +101,13 @@ public enum AutomobilityAssets {;
 
     // Yes I didn't want to do actual smart datagen so behold
     // I will more than likely replace this in the future
-    public static void addMinecraftSlope(String name, String base) {
-        base = switch (base) {
-            case "snow_block" -> "snow";
-            case "quartz_block" -> "quartz_block_side";
-            case "smooth_sandstone" -> "sandstone_top";
-            case "smooth_quartz" -> "quartz_block_top";
-            case "smooth_red_sandstone" -> "red_sandstone_top";
-            case "dried_kelp_block" -> "dried_kelp_side";
-            case "ancient_debris" -> "ancient_debris_side";
-            case "lodestone" -> "lodestone_top";
-            default -> base;
-        };
-        if (base.startsWith("waxed_") && base.contains("copper")) {
-            base = base.replaceFirst("waxed_", "");
+    // UPDATE: Not really smarter now, but at least configurable
+    public static void addSlope(String name, String texture) {
+        if (texture.startsWith("minecraft:") && texture.contains("waxed_") && texture.contains("_copper")) {
+            texture = texture.replaceFirst("waxed_", "");
         }
-        var tex = "minecraft:block/"+base;
-        addSlope(name, tex);
+
+        _addSlope(name, texture);
     }
 
     public static void addProcessor(Consumer<RuntimeResourcePack> processor) {

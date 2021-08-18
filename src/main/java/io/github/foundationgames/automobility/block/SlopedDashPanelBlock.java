@@ -15,7 +15,7 @@ public class SlopedDashPanelBlock extends SlopeBlock {
     public static final BooleanProperty RIGHT = BooleanProperty.of("right");
 
     public SlopedDashPanelBlock(Settings settings) {
-        super(settings);
+        super(settings, AutomobilityBlocks.SLOPED_DASH_PANEL);
         setDefaultState(getDefaultState().with(LEFT, false).with(RIGHT, false));
     }
 

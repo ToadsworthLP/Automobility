@@ -15,7 +15,7 @@ public class SteepSlopedDashPanelBlock extends SteepSlopeBlock {
     public static final BooleanProperty RIGHT = BooleanProperty.of("right");
 
     public SteepSlopedDashPanelBlock(Settings settings) {
-        super(settings);
+        super(settings, AutomobilityBlocks.STEEP_SLOPED_DASH_PANEL);
         setDefaultState(getDefaultState().with(LEFT, false).with(RIGHT, false));
     }
 

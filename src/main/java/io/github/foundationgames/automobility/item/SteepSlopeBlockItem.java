@@ -19,11 +19,17 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 public class SteepSlopeBlockItem extends BlockItem {
-    private final Block base;
+    private final String tooltipTranslationKey;
 
     public SteepSlopeBlockItem(Block base, Block block, Settings settings) {
         super(block, settings);
-        this.base = base;
+
+        this.tooltipTranslationKey = base.getTranslationKey();
+    }
+
+    public SteepSlopeBlockItem(Block block, Settings settings, String tooltipTranslationKey) {
+        super(block, settings);
+        this.tooltipTranslationKey = tooltipTranslationKey;
     }
 
     @Nullable
@@ -48,12 +54,12 @@ public class SteepSlopeBlockItem extends BlockItem {
 
     @Override
     public String getTranslationKey() {
-        return base != null ? "block.automobility.steep_slope" : super.getTranslationKey();
+        return "block.automobility.steep_slope";
     }
 
     @Override
     public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
         super.appendTooltip(stack, world, tooltip, context);
-        if (base != null) tooltip.add(new TranslatableText(base.getTranslationKey()).formatted(Formatting.GRAY));
+        tooltip.add(new TranslatableText(tooltipTranslationKey).formatted(Formatting.GRAY));
     }
 }

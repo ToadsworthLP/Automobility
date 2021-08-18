@@ -98,5 +98,9 @@
   "engine.automobility.copper": "Copper",
   "engine.automobility.iron": "Iron",
   "engine.automobility.gold": "Gold",
-  "engine.automobility.creative": "Creative"
+  "engine.automobility.creative": "Creative",
+
+  "text.autoconfig.automobility.title": "Automobility",
+  "text.autoconfig.automobility.option.blacklist": "Blacklist",
+  "text.autoconfig.automobility.option.customBlocks": "Custom Slope Blocks"
 }

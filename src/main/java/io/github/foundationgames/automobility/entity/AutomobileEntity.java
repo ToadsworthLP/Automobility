@@ -62,10 +62,13 @@ public class AutomobileEntity extends Entity implements RenderableAutomobile {
     public static final float TERMINAL_VELOCITY = -1.2f;
     public static final float RAMP_BOOST_MIN_VELOCITY = 0.6f;
 
-    public static final int DRIFT_BOOST_TIME = 32;
+    public static final int DASH_PANEL_BOOST_TIME = 50;
+    public static final float DASH_PANEL_BOOST_POWER = 0.45f;
+
+    public static final int DRIFT_BOOST_TIME = 24;
     public static final float DRIFT_BOOST_POWER = 0.3f;
 
-    public static final int RAMP_BOOST_TIME = 16;
+    public static final int RAMP_BOOST_TIME = 12;
     public static final float RAMP_BOOST_POWER = 0.3f;
 
     private boolean dirty = false;
