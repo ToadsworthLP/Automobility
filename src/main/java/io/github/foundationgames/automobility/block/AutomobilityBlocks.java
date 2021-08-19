@@ -33,6 +33,7 @@ import net.minecraft.item.ItemGroup;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -48,6 +49,8 @@ public enum AutomobilityBlocks {;
     public static final Block SLOPED_DASH_PANEL = register("dash_panel_slope", new SlopedDashPanelBlock(FabricBlockSettings.copyOf(Blocks.IRON_BLOCK).luminance(1).emissiveLighting((state, world, pos) -> true)));
     public static final Block STEEP_SLOPED_DASH_PANEL = register("steep_dash_panel_slope", new SteepSlopedDashPanelBlock(FabricBlockSettings.copyOf(Blocks.IRON_BLOCK).luminance(1).emissiveLighting((state, world, pos) -> true)));
 
+    public static final List<Block> SLOPE_BLOCKS = new ArrayList<>();
+
     public static void init() {
         Registry.register(Registry.ITEM, Automobility.id("dash_panel_slope"), new SlopeBlockItem(DASH_PANEL, SLOPED_DASH_PANEL, new Item.Settings().group(Automobility.SLOPES_GROUP)));
         Registry.register(Registry.ITEM, Automobility.id("steep_dash_panel_slope"), new SteepSlopeBlockItem(DASH_PANEL, STEEP_SLOPED_DASH_PANEL, new Item.Settings().group(Automobility.SLOPES_GROUP)));
@@ -59,7 +62,7 @@ public enum AutomobilityBlocks {;
     public static void initClient() {
         RenderLayer layer = AutomobilityConfig.CONFIG.getDynamicContentRenderLayer();
         if(!layer.equals(RenderLayer.getSolid())) {
-            for (Block block : Registry.BLOCK) {
+            for (Block block : SLOPE_BLOCKS) {
                 if(block instanceof BasedOnBlock basedOnBlock) {
                     BlockRenderLayerMap.INSTANCE.putBlock(block, layer);
                 }
@@ -69,7 +72,7 @@ public enum AutomobilityBlocks {;
 
     @Environment(EnvType.CLIENT)
     public static void initFoliageColorBlocks() {
-        for (Block block : Registry.BLOCK) {
+        for (Block block : SLOPE_BLOCKS) {
             if(block instanceof BasedOnBlock basedOnBlock && ColorProviderRegistry.BLOCK.get(basedOnBlock.getBaseBlock()) != null) {
                 BlockColorProvider blockColorProvider = ColorProviderRegistry.BLOCK.get(basedOnBlock.getBaseBlock());
                 ItemColorProvider itemColorProvider = ColorProviderRegistry.ITEM.get(basedOnBlock.getBaseBlock().asItem());
@@ -129,12 +132,13 @@ public enum AutomobilityBlocks {;
         settings.nonOpaque();
         settings.collidable(true);
 
-        SlopeBlock slopeBlock = new SlopeBlock(settings, base);
-        Block block = register(path, slopeBlock);
+        Block block = register(path, new SlopeBlock(settings, base));
         Registry.register(Registry.ITEM, normalId, new SlopeBlockItem(base, block, new Item.Settings().group(Automobility.SLOPES_GROUP)));
+        SLOPE_BLOCKS.add(block);
 
         Block steepBlock = register(steepPath, new SteepSlopeBlock(settings, base));
         Registry.register(Registry.ITEM, steepId, new SteepSlopeBlockItem(base, steepBlock, new Item.Settings().group(Automobility.SLOPES_GROUP)));
+        SLOPE_BLOCKS.add(steepBlock);
 
         AutomobilityAssets.addProcessor(pack -> AutomobilityAssets.addSlope(path, texture));
         AutomobilityData.NON_STEEP_SLOPE_TAG_CANDIDATES.add(normalId);
@@ -147,11 +151,17 @@ public enum AutomobilityBlocks {;
         Identifier normalId = Automobility.id(path);
         Identifier steepId = Automobility.id(steepPath);
 
-        Block block = register(path, new SlopeBlock(FabricBlockSettings.copyOf(base), base));
-        Registry.register(Registry.ITEM, normalId, new SlopeBlockItem(block, new Item.Settings().group(Automobility.SLOPES_GROUP), tooltipTranslationKey));
+        AutomobilityBlockSettings settings = AutomobilityBlockSettings.copyOfDefaultState(base);
+        settings.nonOpaque();
+        settings.collidable(true);
 
-        Block steepBlock = register(steepPath, new SteepSlopeBlock(FabricBlockSettings.copyOf(base), base));
+        Block block = register(path, new SlopeBlock(settings, base));
+        Registry.register(Registry.ITEM, normalId, new SlopeBlockItem(block, new Item.Settings().group(Automobility.SLOPES_GROUP), tooltipTranslationKey));
+        SLOPE_BLOCKS.add(block);
+
+        Block steepBlock = register(steepPath, new SteepSlopeBlock(settings, base));
         Registry.register(Registry.ITEM, steepId, new SteepSlopeBlockItem(steepBlock, new Item.Settings().group(Automobility.SLOPES_GROUP), tooltipTranslationKey));
+        SLOPE_BLOCKS.add(steepBlock);
 
         AutomobilityAssets.addProcessor(pack -> AutomobilityAssets.addSlope(path, texture));
         AutomobilityData.NON_STEEP_SLOPE_TAG_CANDIDATES.add(normalId);
