@@ -5,7 +5,8 @@ import io.github.foundationgames.automobility.automobile.AutomobileFrame;
 import io.github.foundationgames.automobility.automobile.AutomobileStats;
 import io.github.foundationgames.automobility.automobile.AutomobileWheel;
 import io.github.foundationgames.automobility.automobile.render.RenderableAutomobile;
-import io.github.foundationgames.automobility.block.OffRoadBlock;
+import io.github.foundationgames.automobility.block.LayeredOffroadBlock;
+import io.github.foundationgames.automobility.block.OffroadBlock;
 import io.github.foundationgames.automobility.block.Sloped;
 import io.github.foundationgames.automobility.item.AutomobilityItems;
 import io.github.foundationgames.automobility.util.AUtils;
@@ -13,6 +14,7 @@ import io.github.foundationgames.automobility.util.lambdacontrols.ControllerUtil
 import io.github.foundationgames.automobility.util.network.PayloadPackets;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.block.SideShapeType;
 import net.minecraft.client.model.Model;
@@ -568,11 +570,11 @@ public class AutomobileEntity extends Entity implements RenderableAutomobile {
         }
 
         // Handle being in off-road
-        if (boostSpeed < 0.4f && world.getBlockState(getBlockPos()).getBlock() instanceof OffRoadBlock offRoad) {
-            int layers = world.getBlockState(getBlockPos()).get(OffRoadBlock.LAYERS);
-            float cap = stats.getComfortableSpeed() * (1 - ((float)layers / 3.5f));
+        if (boostSpeed < 0.4f && world.getBlockState(getBlockPos()).getBlock() instanceof OffroadBlock offroad) {
+            BlockState floorBlockState = world.getBlockState(getBlockPos());
+            float cap = stats.getComfortableSpeed() * (1 - offroad.getSpeedPenalty(floorBlockState));
             engineSpeed = Math.min(cap, engineSpeed);
-            this.debrisColor = offRoad.color;
+            this.debrisColor = offroad.getDebrisColor(floorBlockState);
             this.offRoad = true;
         } else this.offRoad = false;
 

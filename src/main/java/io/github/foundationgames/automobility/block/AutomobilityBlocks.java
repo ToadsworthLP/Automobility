@@ -14,18 +14,10 @@ import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
 import net.fabricmc.fabric.api.client.rendering.v1.ColorProviderRegistry;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
-import net.fabricmc.fabric.api.tag.TagRegistry;
-import net.fabricmc.fabric.mixin.object.builder.AbstractBlockAccessor;
-import net.fabricmc.fabric.mixin.object.builder.AbstractBlockSettingsAccessor;
-import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
-import net.minecraft.block.MapColor;
 import net.minecraft.client.color.block.BlockColorProvider;
 import net.minecraft.client.color.item.ItemColorProvider;
-import net.minecraft.client.color.world.BiomeColors;
-import net.minecraft.client.color.world.FoliageColors;
-import net.minecraft.client.color.world.GrassColors;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
@@ -34,16 +26,15 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 public enum AutomobilityBlocks {;
     public static final Block AUTO_MECHANIC_TABLE = register("auto_mechanic_table", new AutoMechanicTableBlock(FabricBlockSettings.copyOf(Blocks.COPPER_BLOCK)), Automobility.MAIN_GROUP);
-    public static final Block GRASS_OFFROAD_LAYER = register("grass_offroad_layer", new OffRoadBlock(FabricBlockSettings.copyOf(Blocks.GRASS_BLOCK).noCollision(), AUtils.colorFromInt(0x406918), Blocks.GRASS_BLOCK), Automobility.OFFROAD_GROUP);
-    public static final Block DIRT_OFFROAD_LAYER = register("dirt_offroad_layer", new OffRoadBlock(FabricBlockSettings.copyOf(Blocks.DIRT).noCollision(), AUtils.colorFromInt(0x594227), Blocks.DIRT), Automobility.OFFROAD_GROUP);
-    public static final Block SAND_OFFROAD_LAYER = register("sand_offroad_layer", new OffRoadBlock(FabricBlockSettings.copyOf(Blocks.SAND).noCollision(), AUtils.colorFromInt(0xC2B185), Blocks.SAND), Automobility.OFFROAD_GROUP);
-    public static final Block SNOW_OFFROAD_LAYER = register("snow_offroad_layer", new OffRoadBlock(FabricBlockSettings.copyOf(Blocks.SNOW).noCollision(), AUtils.colorFromInt(0xD0E7ED), Blocks.SNOW_BLOCK), Automobility.OFFROAD_GROUP);
+    public static final Block GRASS_OFFROAD_LAYER = register("grass_offroad_layer", new LayeredOffroadBlock(FabricBlockSettings.copyOf(Blocks.GRASS_BLOCK).noCollision(), AUtils.colorFromInt(0x406918), Blocks.GRASS_BLOCK), Automobility.OFFROAD_GROUP);
+    public static final Block DIRT_OFFROAD_LAYER = register("dirt_offroad_layer", new LayeredOffroadBlock(FabricBlockSettings.copyOf(Blocks.DIRT).noCollision(), AUtils.colorFromInt(0x594227), Blocks.DIRT), Automobility.OFFROAD_GROUP);
+    public static final Block SAND_OFFROAD_LAYER = register("sand_offroad_layer", new LayeredOffroadBlock(FabricBlockSettings.copyOf(Blocks.SAND).noCollision(), AUtils.colorFromInt(0xC2B185), Blocks.SAND), Automobility.OFFROAD_GROUP);
+    public static final Block SNOW_OFFROAD_LAYER = register("snow_offroad_layer", new LayeredOffroadBlock(FabricBlockSettings.copyOf(Blocks.SNOW).noCollision(), AUtils.colorFromInt(0xD0E7ED), Blocks.SNOW_BLOCK), Automobility.OFFROAD_GROUP);
 
     public static final Block DASH_PANEL = register("dash_panel", new DashPanelBlock(FabricBlockSettings.copyOf(Blocks.IRON_BLOCK).luminance(1).emissiveLighting((state, world, pos) -> true).noCollision()), Automobility.MAIN_GROUP);
     public static final Block SLOPED_DASH_PANEL = register("dash_panel_slope", new SlopedDashPanelBlock(FabricBlockSettings.copyOf(Blocks.IRON_BLOCK).luminance(1).emissiveLighting((state, world, pos) -> true)));
@@ -72,6 +63,16 @@ public enum AutomobilityBlocks {;
 
     @Environment(EnvType.CLIENT)
     public static void initFoliageColorBlocks() {
+        // Grass offroad layer
+        {
+            BasedOnBlock basedOnBlock = (BasedOnBlock)GRASS_OFFROAD_LAYER;
+            BlockColorProvider blockColorProvider = ColorProviderRegistry.BLOCK.get(basedOnBlock.getBaseBlock());
+            ItemColorProvider itemColorProvider = ColorProviderRegistry.ITEM.get(basedOnBlock.getBaseBlock().asItem());
+            if(blockColorProvider != null) ColorProviderRegistry.BLOCK.register(blockColorProvider, GRASS_OFFROAD_LAYER);
+            if(itemColorProvider != null) ColorProviderRegistry.ITEM.register(itemColorProvider, GRASS_OFFROAD_LAYER.asItem());
+        }
+
+        // Slope block
         for (Block block : SLOPE_BLOCKS) {
             if(block instanceof BasedOnBlock basedOnBlock && ColorProviderRegistry.BLOCK.get(basedOnBlock.getBaseBlock()) != null) {
                 BlockColorProvider blockColorProvider = ColorProviderRegistry.BLOCK.get(basedOnBlock.getBaseBlock());
@@ -98,7 +99,6 @@ public enum AutomobilityBlocks {;
 
         Set<Identifier> blacklist = AutomobilityConfig.CONFIG.getBlacklist();
         for (Block base : Registry.BLOCK) {
-            Identifier baseIdentifier = Registry.BLOCK.getId(base);
             if (base.getClass().equals(Block.class)) {
                 Identifier id = Registry.BLOCK.getId(base);
                 if (!blacklist.contains(id)) {

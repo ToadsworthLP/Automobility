@@ -16,7 +16,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
 import org.jetbrains.annotations.Nullable;
 
-public class OffRoadBlock extends Block implements BasedOnBlock {
+public class LayeredOffroadBlock extends Block implements BasedOnBlock, OffroadBlock {
     public static final VoxelShape ONE_LAYER_SHAPE = createCuboidShape(0, 0, 0, 16, 2, 16);
     public static final VoxelShape TWO_LAYER_SHAPE = createCuboidShape(0, 0, 0, 16, 4, 16);
     public static final VoxelShape THREE_LAYER_SHAPE = createCuboidShape(0, 0, 0, 16, 6, 16);
@@ -25,9 +25,9 @@ public class OffRoadBlock extends Block implements BasedOnBlock {
 
     public final Vec3f color;
 
-    private Block base;
+    private final Block base;
 
-    public OffRoadBlock(Settings settings, Vec3f color, Block base) {
+    public LayeredOffroadBlock(Settings settings, Vec3f color, Block base) {
         super(settings);
         setDefaultState(getDefaultState().with(LAYERS, 1));
         this.color = color;
@@ -85,5 +85,15 @@ public class OffRoadBlock extends Block implements BasedOnBlock {
     @Override
     public Block getBaseBlock() {
         return base;
+    }
+
+    @Override
+    public float getSpeedPenalty(BlockState state) {
+        return ((float) state.get(LAYERS)) / 3.5f;
+    }
+
+    @Override
+    public Vec3f getDebrisColor(BlockState state) {
+        return color;
     }
 }
