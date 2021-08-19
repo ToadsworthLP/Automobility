@@ -25,7 +25,6 @@ public class Automobility implements ModInitializer {
     public static final ItemGroup MAIN_GROUP = FabricItemGroupBuilder.build(Automobility.id("automobility"), AUtils::createGroupIcon);
     public static final ItemGroup PREFABS_GROUP = FabricItemGroupBuilder.build(Automobility.id("automobility_prefabs"), AUtils::createPrefabsIcon);
     public static final ItemGroup SLOPES_GROUP = FabricItemGroupBuilder.build(Automobility.id("automobility_slopes"), AUtils::createSlopesIcon);
-    public static final ItemGroup OFFROAD_GROUP = FabricItemGroupBuilder.build(Automobility.id("automobility_offroad"), AUtils::createOffroadIcon);
 
     public static final Tag<Block> SLOPES = TagRegistry.block(Automobility.id("slopes"));
     public static final Tag<Block> STEEP_SLOPES = TagRegistry.block(Automobility.id("steep_slopes"));

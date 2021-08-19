@@ -88,12 +88,12 @@ public class LayeredOffroadBlock extends Block implements BasedOnBlock, OffroadB
     }
 
     @Override
-    public float getSpeedPenalty(BlockState state) {
+    public float getSpeedPenalty(BlockState state, WorldView world, BlockPos pos) {
         return ((float) state.get(LAYERS)) / 3.5f;
     }
 
     @Override
-    public Vec3f getDebrisColor(BlockState state) {
+    public Vec3f getDebrisColor(BlockState state, WorldView world, BlockPos pos) {
         return color;
     }
 }

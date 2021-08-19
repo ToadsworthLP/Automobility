@@ -572,9 +572,9 @@ public class AutomobileEntity extends Entity implements RenderableAutomobile {
         // Handle being in off-road
         if (boostSpeed < 0.4f && world.getBlockState(getBlockPos()).getBlock() instanceof OffroadBlock offroad) {
             BlockState floorBlockState = world.getBlockState(getBlockPos());
-            float cap = stats.getComfortableSpeed() * (1 - offroad.getSpeedPenalty(floorBlockState));
+            float cap = stats.getComfortableSpeed() * (1 - offroad.getSpeedPenalty(floorBlockState, world, getBlockPos()));
             engineSpeed = Math.min(cap, engineSpeed);
-            this.debrisColor = offroad.getDebrisColor(floorBlockState);
+            this.debrisColor = offroad.getDebrisColor(floorBlockState, world, getBlockPos());
             this.offRoad = true;
         } else this.offRoad = false;
 

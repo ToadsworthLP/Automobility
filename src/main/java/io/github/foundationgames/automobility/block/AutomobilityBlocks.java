@@ -31,10 +31,11 @@ import java.util.Set;
 
 public enum AutomobilityBlocks {;
     public static final Block AUTO_MECHANIC_TABLE = register("auto_mechanic_table", new AutoMechanicTableBlock(FabricBlockSettings.copyOf(Blocks.COPPER_BLOCK)), Automobility.MAIN_GROUP);
-    public static final Block GRASS_OFFROAD_LAYER = register("grass_offroad_layer", new LayeredOffroadBlock(FabricBlockSettings.copyOf(Blocks.GRASS_BLOCK).noCollision(), AUtils.colorFromInt(0x406918), Blocks.GRASS_BLOCK), Automobility.OFFROAD_GROUP);
-    public static final Block DIRT_OFFROAD_LAYER = register("dirt_offroad_layer", new LayeredOffroadBlock(FabricBlockSettings.copyOf(Blocks.DIRT).noCollision(), AUtils.colorFromInt(0x594227), Blocks.DIRT), Automobility.OFFROAD_GROUP);
-    public static final Block SAND_OFFROAD_LAYER = register("sand_offroad_layer", new LayeredOffroadBlock(FabricBlockSettings.copyOf(Blocks.SAND).noCollision(), AUtils.colorFromInt(0xC2B185), Blocks.SAND), Automobility.OFFROAD_GROUP);
-    public static final Block SNOW_OFFROAD_LAYER = register("snow_offroad_layer", new LayeredOffroadBlock(FabricBlockSettings.copyOf(Blocks.SNOW).noCollision(), AUtils.colorFromInt(0xD0E7ED), Blocks.SNOW_BLOCK), Automobility.OFFROAD_GROUP);
+    public static final Block GRASS_OFFROAD_LAYER = register("grass_offroad_layer", new LayeredOffroadBlock(FabricBlockSettings.copyOf(Blocks.GRASS_BLOCK).noCollision(), AUtils.colorFromInt(0x406918), Blocks.GRASS_BLOCK), Automobility.MAIN_GROUP);
+    public static final Block DIRT_OFFROAD_LAYER = register("dirt_offroad_layer", new LayeredOffroadBlock(FabricBlockSettings.copyOf(Blocks.DIRT).noCollision(), AUtils.colorFromInt(0x594227), Blocks.DIRT), Automobility.MAIN_GROUP);
+    public static final Block SAND_OFFROAD_LAYER = register("sand_offroad_layer", new LayeredOffroadBlock(FabricBlockSettings.copyOf(Blocks.SAND).noCollision(), AUtils.colorFromInt(0xC2B185), Blocks.SAND), Automobility.MAIN_GROUP);
+    public static final Block SNOW_OFFROAD_LAYER = register("snow_offroad_layer", new LayeredOffroadBlock(FabricBlockSettings.copyOf(Blocks.SNOW).noCollision(), AUtils.colorFromInt(0xD0E7ED), Blocks.SNOW_BLOCK), Automobility.MAIN_GROUP);
+    public static final Block OFFROAD_MARKER = register("offroad_marker", new OffroadMarkerBlock(FabricBlockSettings.copyOf(Blocks.STONE).noCollision().nonOpaque(), 0.75f), Automobility.MAIN_GROUP);
 
     public static final Block DASH_PANEL = register("dash_panel", new DashPanelBlock(FabricBlockSettings.copyOf(Blocks.IRON_BLOCK).luminance(1).emissiveLighting((state, world, pos) -> true).noCollision()), Automobility.MAIN_GROUP);
     public static final Block SLOPED_DASH_PANEL = register("dash_panel_slope", new SlopedDashPanelBlock(FabricBlockSettings.copyOf(Blocks.IRON_BLOCK).luminance(1).emissiveLighting((state, world, pos) -> true)));
@@ -51,6 +52,8 @@ public enum AutomobilityBlocks {;
 
     @Environment(EnvType.CLIENT)
     public static void initClient() {
+        BlockRenderLayerMap.INSTANCE.putBlock(OFFROAD_MARKER, RenderLayer.getTranslucent());
+
         RenderLayer layer = AutomobilityConfig.CONFIG.getDynamicContentRenderLayer();
         if(!layer.equals(RenderLayer.getSolid())) {
             for (Block block : SLOPE_BLOCKS) {

@@ -1,0 +1,6 @@
+{
+  "parent": "automobility:block/template_offroad_marker",
+  "textures": {
+    "offroad_texture": "automobility:block/offroad_marker"
+  }
+}
