@@ -23,7 +23,8 @@ repositories {
 	maven { url = terraformersUrl() }
 	maven { url = "https://aperlambda.github.io/maven" }
 	maven { url = "https://hephaestus.dev/release" }
-	maven { url = "https://storage.googleapis.com/devan-maven/" }maven {
+	maven { url = "https://storage.googleapis.com/devan-maven/" }
+	maven {
 		name = "Cloth API"
 		url = "https://maven.shedaniel.me/"
 	}
