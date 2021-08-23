@@ -3,6 +3,7 @@ package io.github.foundationgames.automobility;
 import io.github.foundationgames.automobility.block.AutomobilityBlocks;
 import io.github.foundationgames.automobility.entity.AutomobileEntity;
 import io.github.foundationgames.automobility.entity.AutomobilityEntities;
+import io.github.foundationgames.automobility.render.CheckpointQuadRenderer;
 import io.github.foundationgames.automobility.item.AutomobilityItems;
 import io.github.foundationgames.automobility.render.AutomobilityModels;
 import io.github.foundationgames.automobility.resource.AutomobilityAssets;
@@ -14,8 +15,11 @@ import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.text.LiteralText;
+import net.minecraft.util.math.Vec3f;
 
 public class AutomobilityClient implements ClientModInitializer {
+    public static CheckpointQuadRenderer CHECKPOINT_QUAD_RENDERER = new CheckpointQuadRenderer(new Vec3f(0.2f, 0.5f, 1), 0.5f);
+
     @Override
     public void onInitializeClient() {
         AutomobilityModels.init();
@@ -25,6 +29,8 @@ public class AutomobilityClient implements ClientModInitializer {
         PayloadPackets.initClient();
 
         AutomobilityAssets.setup();
+
+        CHECKPOINT_QUAD_RENDERER.init();
 
         HudRenderCallback.EVENT.register((matrices, delta) -> {
             var player = MinecraftClient.getInstance().player;
